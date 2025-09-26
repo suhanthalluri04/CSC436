@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GraduationRSVP</string>
+    <string name="graduation_announcement">Graduation Announcement</string>
+    <string name="graduation_cap">Graduation cap</string>
+</resources>
