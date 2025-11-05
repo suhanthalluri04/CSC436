@@ -26,12 +26,6 @@ class MainActivity : ComponentActivity() {
 
    private val timerViewModel = TimerViewModel()
 
-   private val permissionRequestLauncher =
-      registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-         val message = if (isGranted) "Permission granted" else "Permission NOT granted"
-         Log.i("MainActivity", message)
-      }
-
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       enableEdgeToEdge()

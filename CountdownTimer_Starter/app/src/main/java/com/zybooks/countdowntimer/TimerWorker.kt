@@ -1,5 +1,10 @@
 package com.zybooks.countdowntimer
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import androidx.core.app.NotificationCompat
+import android.os.Build
+
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
@@ -7,10 +12,16 @@ import androidx.work.WorkerParameters
 import com.zybooks.countdowntimer.ui.timerText
 import kotlinx.coroutines.delay
 
+const val CHANNEL_ID_TIMER = "channel_timer"
 const val KEY_MILLIS_REMAINING = "com.zybooks.countdowntimer.MILLIS_LEFT"
+const val NOTIFICATION_ID = 0
+
 
 class TimerWorker(context: Context, parameters: WorkerParameters) :
     CoroutineWorker(context, parameters) {
+
+    private val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     override suspend fun doWork(): Result {
         // Get remaining milliseconds from MainActivity
@@ -38,11 +49,29 @@ class TimerWorker(context: Context, parameters: WorkerParameters) :
     }
 
     private fun createTimerNotificationChannel() {
-        // TODO: Create a notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(CHANNEL_ID_TIMER, "Timer Channel",
+                NotificationManager.IMPORTANCE_LOW)
+            channel.description = "Displays how much time is left"
+
+            // Register channel
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun postTimerNotification(text: String) {
-        // TODO: Create a notification
+        // Create notification with various properties
+        val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID_TIMER)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle(applicationContext.getString(R.string.app_name))
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+
+        // Post notification
+        if (notificationManager.areNotificationsEnabled()) {
+            notificationManager.notify(NOTIFICATION_ID, notification)
+        }
 
         Log.d("TimerWorker", text)
     }
